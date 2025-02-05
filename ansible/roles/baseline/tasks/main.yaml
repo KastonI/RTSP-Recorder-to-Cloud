@@ -1,0 +1,27 @@
+---
+
+- name: Install baseline packages
+  ansible.builtin.apt:
+    name:
+      - htop
+      - curl
+      - net-tools
+    state: present
+    update_cache: true
+
+- name: add key for root
+  authorized_key:
+    user: "root"
+    state: present
+    key: "{{ lookup('file', './files/instance_test_key.pub') }}"
+
+
+- name: Disable root login and pass auth
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "{{ item.orig }}"
+    line: "{{ item.changed }}"
+  with_items:
+    - { orig: '^PermitRootLogin', changed: 'PermitRootLogin yes' }
+    - { orig: '^PasswordAuthentication', changed: 'PasswordAuthentication no' }
+  notify: Restart SSH

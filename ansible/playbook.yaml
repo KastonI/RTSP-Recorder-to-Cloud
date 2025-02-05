@@ -1,0 +1,11 @@
+- name: Configure baseline
+  hosts: all
+  become: true
+  roles:
+    - baseline
+
+- name: Configure baseline
+  hosts: all
+  become: true
+  roles:
+    - docker

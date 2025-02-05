@@ -1,0 +1,55 @@
+---
+
+- name: Установить Docker и Docker Compose
+  apt:
+    name:
+      - docker.io
+      - docker-compose
+    state: present
+    update_cache: yes
+
+- name: Запустить и включить Docker
+  systemd:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Создать директории для хранения видео и логов
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: ubuntu
+    group: ubuntu
+    mode: '0755'
+  loop:
+    - /home/ubuntu/app
+    - /var/log
+
+- name: Копировать приватный ключ
+  copy:
+    src: ./files/instance_test_key  # Локальный путь
+    dest: /home/ubuntu/.ssh/instance_test_key  # Куда копируем
+    owner: ubuntu
+    group: ubuntu
+    mode: '0600'
+
+- name: Deploy private repo
+  git:
+    repo: "git@github.com:KastonI/final-project-src.git"
+    dest: "/home/ubuntu/app"
+    version: master
+    key_file: /home/ubuntu/.ssh/instance_test_key
+    accept_hostkey: yes
+    force: yes
+
+- name: Остановить Docker Compose
+  shell: |
+    docker-compose down --rmi all --volumes --remove-orphans
+  args:
+    chdir: /home/ubuntu/app
+
+- name: Запустить Docker Compose
+  shell: |
+    docker-compose up --build -d
+  args:
+    chdir: /home/ubuntu/app
