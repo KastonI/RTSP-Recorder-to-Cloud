@@ -1,6 +1,6 @@
 ---
 
-- name: Установить Docker и Docker Compose
+- name: Iнсталювати Docker i Docker Compose
   apt:
     name:
       - docker.io
@@ -8,13 +8,13 @@
     state: present
     update_cache: yes
 
-- name: Запустить и включить Docker
+- name: Запустити i увiмкнути Docker
   systemd:
     name: docker
     state: started
     enabled: yes
 
-- name: Создать директории для хранения видео и логов
+- name: Створення репозиторiю для зберiгання файлiв i логiв
   file:
     path: "{{ item }}"
     state: directory
@@ -25,30 +25,54 @@
     - /home/ubuntu/app
     - /var/log
 
-- name: Копировать приватный ключ
+- name: Копiювання ключа SSH з пайплайну
   copy:
-    src: ./files/instance_test_key  # Локальный путь
-    dest: /home/ubuntu/.ssh/instance_test_key  # Куда копируем
-    owner: ubuntu
-    group: ubuntu
+    src: /home/runner/.ssh/ssh_private_key
+    dest: /home/ubuntu/.ssh/ssh_private_key
     mode: '0600'
 
-- name: Deploy private repo
+- name: Копiювання GitHub репозиторiю з вихiдним кодом
   git:
     repo: "git@github.com:KastonI/final-project-src.git"
     dest: "/home/ubuntu/app"
     version: master
-    key_file: /home/ubuntu/.ssh/instance_test_key
-    accept_hostkey: yes
+    key_file: "/home/ubuntu/.ssh/ssh_private_key"
     force: yes
+    accept_hostkey: yes
+    depth: 1
 
-- name: Остановить Docker Compose
+- name: Деплой config.json з пiдстановкоб rtsp потокiв
+  template:
+    src: templates/config.json.j2
+    dest: /home/ubuntu/app/config.json
+    owner: ubuntu
+    group: ubuntu
+    mode: '0644'
+  vars:
+    RTSP_URL_1: "{{ lookup('env', 'RTSP_URL_1') }}"
+    RTSP_URL_2: "{{ lookup('env', 'RTSP_URL_2') }}"
+
+
+- name: Запис змiнних у файл
+  lineinfile:
+    create: yes
+    path: /etc/environment
+    line: '{{ item.key }}="{{ lookup("env", item.value) }}"'
+  loop:
+    - { key: "TZ", value: "TZ" }
+    - { key: "S3_BUCKET_NAME", value: "S3_BUCKET_NAME" }
+    - { key: "NUM_CAMERAS", value: "NUM_CAMERAS" }
+    - { key: "MAX_BUFFER_SIZE", value: "MAX_BUFFER_SIZE" }
+    - { key: "RECORD_DURATION", value: "RECORD_DURATION" }
+    - { key: "AWS_REGION", value: "AWS_REGION" }
+
+- name: Зупинити Docker Compose файл якщо створений
   shell: |
     docker-compose down --rmi all --volumes --remove-orphans
   args:
     chdir: /home/ubuntu/app
 
-- name: Запустить Docker Compose
+- name: Деплой Docker Compose файлу
   shell: |
     docker-compose up --build -d
   args:

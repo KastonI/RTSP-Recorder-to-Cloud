@@ -58,7 +58,7 @@ resource "aws_eip" "nat_eip" {
 resource "aws_eip" "bastion_host_eip" {
   domain = "vpc"
   tags = {
-    Name = "Nat elastic IP"
+    Name = "Bastion elastic IP"
   }
 }
 
@@ -78,17 +78,31 @@ resource "aws_nat_gateway" "nat_gw" {
 
 #--------------------------SG--------------------------
 
-resource "aws_security_group" "my_sg" {
+resource "aws_security_group" "private_sg" {
   vpc_id      = aws_vpc.vpc.id
-  description = "Allow SSH, HTTP, HTTPS"
+  description = "Allow trafic inside private subnet"
 
-  # ingress {
-  #   description = "SSH"
-  #   from_port   = 22
-  #   to_port     = 22
-  #   protocol    = "TCP"
-  #   cidr_blocks = ["0.0.0.0/0"]
-  # }
+    ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  tags = {
+    Name = "Private Security Group"
+  }
+}
+
+resource "aws_security_group" "public_sg" {
+  vpc_id      = aws_vpc.vpc.id
+  description = "Allow HTTP"
 
   # ingress {
   #   description = "HTTP"
@@ -112,7 +126,7 @@ resource "aws_security_group" "my_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   tags = {
-    Name = "Security Group"
+    Name = "Public Security Group"
   }
 }
 
@@ -178,7 +192,7 @@ EOF
 
 resource "aws_iam_policy" "s3_upload_policy" {
   name        = "S3UploadPolicy"
-  description = "Политика для загрузки в S3"
+  description = "Policy for upload to S3"
 
   policy = <<EOF
 {
@@ -207,13 +221,17 @@ resource "aws_iam_instance_profile" "s3_instance_profile" {
 
 
 #--------------------------Public_instance--------------------------
+resource "aws_key_pair" "ssh_public_key" {
+  key_name   = "ssh_public_key"
+  public_key = var.ssh_public_key
+}
 
 resource "aws_instance" "nginx_instance" {
   subnet_id = aws_subnet.public.id
   ami = var.aws_instance
   instance_type = var.instance_type
-  key_name = var.key_name
-  security_groups = [aws_security_group.my_sg.id]
+  key_name = aws_key_pair.ssh_public_key.key_name
+  security_groups = [aws_security_group.public_sg.id]
   associate_public_ip_address = true
   tags = {
     Name = "Nginx Reverse Proxy"
@@ -226,8 +244,8 @@ resource "aws_instance" "bastion_host_instance" {
   subnet_id = aws_subnet.public.id
   ami = var.aws_instance
   instance_type = var.instance_type
-  key_name = var.key_name
-  security_groups = [aws_security_group.my_sg.id]
+  key_name = aws_key_pair.ssh_public_key.key_name
+  security_groups = [aws_security_group.private_sg.id]
   associate_public_ip_address = true
   tags = {
     Name = "Bastion Host"
@@ -241,9 +259,9 @@ resource "aws_instance" "bastion_host_instance" {
 resource "aws_instance" "rtsp_to_web_instance" {
   subnet_id = aws_subnet.public.id
   ami = var.aws_instance
-  instance_type = "t2.medium"
-  key_name = var.key_name
-  security_groups = [aws_security_group.my_sg.id]
+  instance_type = var.instance_type_rtsp
+  key_name = aws_key_pair.ssh_public_key.key_name
+  security_groups = [aws_security_group.private_sg.id]
   associate_public_ip_address = true
   iam_instance_profile = aws_iam_instance_profile.s3_instance_profile.name
 

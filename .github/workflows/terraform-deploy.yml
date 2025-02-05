@@ -4,7 +4,7 @@ on:
     branches:
       - master
     paths:
-      - 'terraform/**'  # Запускаем только если менялись файлы в terraform/
+      - 'terraform/**'  # Запускаємо тiльки коли був пуш в terraform/
   workflow_dispatch:
 
 jobs:
@@ -20,7 +20,8 @@ jobs:
       TF_VAR_availability_zone: ${{ vars.AVAILABILITY_ZONE }}
       TF_VAR_aws_instance: ${{ vars.AWS_INSTANCE }}
       TF_VAR_instance_type: ${{ vars.INSTANCE_TYPE }}
-      TF_VAR_key_name: ${{ vars.KEY_NAME }}
+      TF_VAR_instance_type_rtsp: ${{ vars.INSTANCE_TYPE_RTSP }}
+      TF_VAR_ssh_public_key: ${{ vars.SSH_PUBLIC_KEY }}
     
     steps:
       - name: Checkout repository
@@ -37,10 +38,6 @@ jobs:
         working-directory: ./terraform        
         run: terraform init
 
-      - name: Terraform Plan
-        working-directory: ./terraform
-        run: terraform plan
-
       - name: Terraform Apply
         working-directory: ./terraform
-        run: terraform apply -auto-approve
+        run: terraform apply -auto-approve -compact-warnings

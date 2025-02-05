@@ -1,10 +1,17 @@
-- name: Configure baseline
-  hosts: all
+# - name: Configure baseline
+#   hosts: all
+#   become: true
+#   roles:
+#     - baseline
+
+- name: Configure Nginx instance
+  hosts: role_nginx
   become: true
   roles:
-    - baseline
+    - nginx
 
-- name: Configure baseline
+
+- name: Configure rtsp instance
   hosts: role_rtsp
   become: true
   roles:

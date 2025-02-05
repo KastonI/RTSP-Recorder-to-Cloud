@@ -2,16 +2,18 @@ name: Ansible-Deploy
 on:
   push:
     branches:
-      - master  #ИЗМЕНИТЬ НА МАСТЕР
+      - master
     paths:
-      - 'ansible/**'  # Запускаем только если изменились файлы в папке ansible/
+      - 'ansible/**'  # Запускаємо тiльки коли змiнились файли в ansible/
   workflow_dispatch:
   workflow_run:
     workflows: ["Terraform-deploy"] 
     types:
       - completed
-  repository_dispatch:  # 👈 Добавлен триггер из другого репозитория
-    types: [external-trigger]
+    conclusions:
+      - success
+  repository_dispatch:  # Тригер для репозиторiю з вихiдним кодом
+    types: [push-to-src-repo]
 
 jobs:
   ansible:
@@ -22,6 +24,7 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_REGION: ${{ vars.AWS_REGION }}
+      
 
     steps:
       - name: Checkout repository
@@ -42,13 +45,25 @@ jobs:
           echo "AWS_REGION: $AWS_REGION"
 
 
-      - name: Run Ansible Playbook with SSH key
+      - name: Setup SSH Key for Ansible
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > /home/runner/.ssh/ssh_private_key
+          chmod 600 /home/runner/.ssh/ssh_private_key
+          ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+        env:
+          ANSIBLE_HOST_KEY_CHECKING: "False"
+
+      - name: Run Ansible Playbook
         working-directory: ./ansible
         env:
-          instance_test_key: ${{ secrets.instance_test_key }}
           ansible_user: ${{ vars.ANSIBLE_USER }}
+          RTSP_URL_1: ${{ secrets.RTSP_URL_1 }}
+          RTSP_URL_2: ${{ secrets.RTSP_URL_2 }}
+          S3_BUCKET_NAME: ${{ vars.S3_RECORDS }}
+          TZ: ${{ vars.TZ }}
+          NUM_CAMERAS: ${{ vars.NUM_CAMERAS }}
+          MAX_BUFFER_SIZE: ${{ vars.MAX_BUFFER_SIZE }}
+          RECORD_DURATION: ${{ vars.DURATION }}
         run: |
-          echo "$instance_test_key" > ./instance_test_key.pem
-          chmod 600 ./instance_test_key.pem
-          ansible-playbook -i aws_ec2.yaml playbook.yaml --private-key ./instance_test_key.pem -u ${ansible_user}
-
+          ansible-playbook -i aws_ec2.yaml playbook.yaml --private-key /home/runner/.ssh/ssh_private_key -u ${ansible_user}
