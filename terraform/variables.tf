@@ -22,10 +22,6 @@ variable "availability_zone" {
   default = "eu-central-1a"
 }
 
-variable "s3_bucket_name" {
-  default = "terraform-kast"
-}
-
 variable "aws_instance" {
   default = "ami-07eef52105e8a2059"
 }

@@ -1,0 +1,54 @@
+name: Ansible-Deploy
+on:
+  push:
+    branches:
+      - master  #ИЗМЕНИТЬ НА МАСТЕР
+    paths:
+      - 'ansible/**'  # Запускаем только если изменились файлы в папке ansible/
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["Terraform-deploy"] 
+    types:
+      - completed
+  repository_dispatch:  # 👈 Добавлен триггер из другого репозитория
+    types: [external-trigger]
+
+jobs:
+  ansible:
+    name: Ansible Deploy
+    runs-on: ubuntu-latest
+
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: ${{ vars.AWS_REGION }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+
+      - name: Install Python dependencies
+        run: |
+          sudo apt update && sudo apt install -y python3-pip python3-venv
+          pip install --upgrade pip
+          pip install ansible boto3 botocore
+
+          
+      - name: Debug AWS Access
+        run: |
+          aws sts get-caller-identity
+          echo "AWS_REGION: $AWS_REGION"
+
+
+      - name: Run Ansible Playbook with SSH key
+        working-directory: ./ansible
+        env:
+          instance_test_key: ${{ secrets.instance_test_key }}
+          ansible_user: ${{ vars.ANSIBLE_USER }}
+        run: |
+          echo "$instance_test_key" > ./instance_test_key.pem
+          chmod 600 ./instance_test_key.pem
+          ansible-playbook -i aws_ec2.yaml playbook.yaml --private-key ./instance_test_key.pem -u ${ansible_user}
+

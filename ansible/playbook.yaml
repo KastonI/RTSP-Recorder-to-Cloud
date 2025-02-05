@@ -5,7 +5,7 @@
     - baseline
 
 - name: Configure baseline
-  hosts: all
+  hosts: role_rtsp
   become: true
   roles:
     - docker

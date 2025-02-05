@@ -11,7 +11,7 @@
 
 - name: add key for root
   authorized_key:
-    user: "root"
+    user: "ubuntu"
     state: present
     key: "{{ lookup('file', './files/instance_test_key.pub') }}"
 
