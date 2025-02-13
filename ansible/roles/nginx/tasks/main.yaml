@@ -10,9 +10,9 @@
     rtsp_private_ip: "{{ hostvars[groups['role_rtsp'][0]]['private_ip_address'] }}"
   when: groups['role_rtsp'] | length > 0 and 'private_ip_address' in hostvars[groups['role_rtsp'][0]]
 
-- name: Display Hello world output
+- name: Вивести приватний ip для rtsp iнстансу
   debug:
-    msg: "Output from bastion: {{ private_ip_address }}"
+    msg: "Private ip for rtsp: {{ private_ip_address }}"
 
 - name: Копiюю nginx.conf з ip адресою
   template:

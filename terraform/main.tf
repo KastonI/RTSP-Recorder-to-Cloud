@@ -39,28 +39,32 @@ resource "aws_subnet" "private" {
   tags                    = { Name = "Private subnet" }
 }
 
-# Elastic IP для NAT Gateway
 resource "aws_eip" "nat_eip" {
   domain = "vpc"
   tags   = { Name = "NAT Elastic IP" }
 }
 
-# Интернет-шлюз
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.vpc.id
   tags   = { Name = "Internet Gateway" }
 }
 
-# NAT Gateway
 resource "aws_nat_gateway" "nat_gw" {
   subnet_id     = aws_subnet.public.id
-  allocation_id = aws_eip.nat_eip.allocation_id # ✅ исправлено
+  allocation_id = aws_eip.nat_eip.allocation_id
   depends_on    = [aws_internet_gateway.igw]
   tags          = { Name = "NAT Gateway" }
 }
 
 resource "aws_security_group" "bastion_sg" {
   vpc_id = aws_vpc.vpc.id
+
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
   ingress {
     from_port   = 22
@@ -89,14 +93,6 @@ resource "aws_security_group" "private_sg" {
   cidr_blocks = ["0.0.0.0/0"]
   } 
 
-  # ingress {
-  #   from_port       = 80
-  #   to_port         = 80
-  #   protocol        = "tcp"
-  #   security_groups = ["0.0.0.0/0"]
-  # }
-
-  # Разрешаем SSH доступ из bastion_sg (для подключения внутри VPC)
   ingress {
     from_port       = 22
     to_port         = 22
@@ -105,7 +101,7 @@ resource "aws_security_group" "private_sg" {
   }
 
   egress {
-    from_port   = 0 # Разрешаем весь исходящий трафик
+    from_port   = 0
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
@@ -117,7 +113,6 @@ resource "aws_security_group" "private_sg" {
 resource "aws_security_group" "public_sg" {
   vpc_id = aws_vpc.vpc.id
 
-  # Разрешаем HTTP доступ с интернета
   ingress {
     from_port   = 0
     to_port     = 0
@@ -125,14 +120,6 @@ resource "aws_security_group" "public_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # ingress {
-  #   from_port   = 554
-  #   to_port     = 554
-  #   protocol    = "tcp"
-  #   cidr_blocks = ["10.0.0.0/1"]
-  # }
-
-  # Разрешаем SSH доступ из bastion_sg (для администрирования)
   ingress {
     from_port       = 22
     to_port         = 22
@@ -150,7 +137,6 @@ resource "aws_security_group" "public_sg" {
   tags = { Name = "Public Security Group" }
 }
 
-# Таблицы маршрутизации
 resource "aws_route_table" "public_rt" {
   vpc_id = aws_vpc.vpc.id
 
@@ -181,18 +167,11 @@ resource "aws_route_table_association" "private_rt_assosiation" {
   subnet_id = aws_subnet.private.id
 }
 
-# Ключи SSH
 resource "aws_key_pair" "ssh_public_key" {
   key_name   = "ssh_public_key"
   public_key = var.ssh_public_key
 }
 
-resource "aws_key_pair" "ssh_public_bastion" {
-  key_name   = "ssh_public_bastion"
-  public_key = var.ssh_public_bastion
-}
-
-# IAM: Роль, привязка политики и Instance Profile
 resource "aws_iam_role" "s3_uploader_role" {
   name = "S3UploaderRole"
   assume_role_policy = <<EOF
@@ -241,19 +220,17 @@ resource "aws_iam_role_policy_attachment" "s3_attach" {
   policy_arn = aws_iam_policy.s3_upload_policy.arn
 }
 
-
 resource "aws_iam_instance_profile" "s3_instance_profile" {
   name = "S3UploaderInstanceProfile"
   role = aws_iam_role.s3_uploader_role.name
 }
 
-# Инстансы EC2
 resource "aws_instance" "nginx_instance" {
   subnet_id              = aws_subnet.public.id
   ami                    = var.aws_instance
   instance_type          = var.instance_type
   key_name               = aws_key_pair.ssh_public_key.key_name
-  vpc_security_group_ids = [aws_security_group.public_sg.id] # ✅ исправлено
+  vpc_security_group_ids = [aws_security_group.public_sg.id] 
 
   associate_public_ip_address = true
   tags = {
@@ -268,8 +245,7 @@ resource "aws_instance" "bastion_host_instance" {
   ami                    = var.aws_instance
   instance_type          = var.instance_type
   key_name               = aws_key_pair.ssh_public_key.key_name
-  #key_name               = aws_key_pair.ssh_public_bastion.key_name
-  vpc_security_group_ids = [aws_security_group.bastion_sg.id] # ✅ исправлено
+  vpc_security_group_ids = [aws_security_group.bastion_sg.id] 
 
   associate_public_ip_address = true
   tags = {
@@ -280,11 +256,11 @@ resource "aws_instance" "bastion_host_instance" {
 }
 
 resource "aws_instance" "rtsp_to_web_instance" {
-  subnet_id              = aws_subnet.private.id # ✅ Исправлено (ранее был public)
+  subnet_id              = aws_subnet.private.id
   ami                    = var.aws_instance
   instance_type          = var.instance_type_rtsp
   key_name               = aws_key_pair.ssh_public_key.key_name
-  vpc_security_group_ids = [aws_security_group.private_sg.id] # ✅ исправлено
+  vpc_security_group_ids = [aws_security_group.private_sg.id]
 
   iam_instance_profile = aws_iam_instance_profile.s3_instance_profile.name
 
