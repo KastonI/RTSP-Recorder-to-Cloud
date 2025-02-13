@@ -1,11 +1,13 @@
 plugin: amazon.aws.aws_ec2
 regions:
-  - "{{ lookup('env', 'AWS_REGION') }}"
+  - "eu-central-1" #"{{ lookup('env', 'AWS_REGION') }}"
 filters:
   instance-state-name: running
 keyed_groups:
   - key: tags.role
     prefix: role
 host_key_checks: false
+hostnames:
+  - tag:role
 compose:
-  ansible_host: public_ip_address
+  ansible_host: public_ip_address if tags.role == "bastion" else private_ip_address

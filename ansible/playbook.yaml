@@ -1,18 +1,46 @@
-# - name: Configure baseline
-#   hosts: all
-#   become: true
+---
+
+- hosts: role_bastion
+  gather_facts: yes
+  remote_user: ubuntu
+  roles:
+    - role: bastion
+
+- hosts: role_nginx
+  gather_facts: yes
+  become: yes
+  roles:
+    - role: nginx
+
+- hosts: role_rtsp
+  gather_facts: yes
+  become: yes
+  roles:
+    - role: docker
+
+
+
+
+
+
+
+# - name: Test bastion role
+#   hosts: role_bastion
+#   become: no
 #   roles:
-#     - baseline
+#     - bastion
 
-- name: Configure Nginx instance
-  hosts: role_nginx
-  become: true
-  roles:
-    - nginx
+# - name: Configure all hosts via bastion host
+#   hosts: all
+#   become: yes
 
+#   pre_tasks:
+#     - name: Set proxy command for non-bastion hosts
+#       set_fact:
+#         ansible_ssh_common_args: >-
+#           -o ProxyCommand="ssh -W %h:%p -q -i /home/runner/.ssh/ssh_private_key ubuntu@{{ hostvars[groups['role_bastion'][0]].public_ip_address }}"
+#       when: "'role_bastion' not in group_names"
 
-- name: Configure rtsp instance
-  hosts: role_rtsp
-  become: true
-  roles:
-    - docker
+#   roles:
+#     - docker
+#     - nginx

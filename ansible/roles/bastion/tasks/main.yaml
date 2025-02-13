@@ -1,0 +1,7 @@
+- name: Echo Hello world on Bastion host
+  shell: echo "Hello world"
+  register: echo_result
+
+- name: Display Hello world output
+  debug:
+    msg: "Output from bastion: {{ echo_result.stdout }}"

@@ -1,11 +1,20 @@
-- name: Iнсталювати Docker i Docker Compose
+- name: Iнсталювати nginx
   apt:
     name:
       - nginx
     state: present
     update_cache: yes
 
-- name:
+- name: Знайти приватний Ip для iнстансу з role_rtsp
+  set_fact:
+    rtsp_private_ip: "{{ hostvars[groups['role_rtsp'][0]]['private_ip_address'] }}"
+  when: groups['role_rtsp'] | length > 0 and 'private_ip_address' in hostvars[groups['role_rtsp'][0]]
+
+- name: Display Hello world output
+  debug:
+    msg: "Output from bastion: {{ private_ip_address }}"
+
+- name: Копiюю nginx.conf з ip адресою
   template:
     src: templates/nginx.conf.j2
     dest: /etc/nginx/nginx.conf
@@ -13,3 +22,4 @@
     mode: '0644'
   notify:
     - Restart Nginx
+  when: rtsp_private_ip is defined

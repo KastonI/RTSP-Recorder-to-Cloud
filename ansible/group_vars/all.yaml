@@ -1,0 +1,8 @@
+ansible_user: "ubuntu"
+ansible_ssh_private_key_file: "/home/runner/.ssh/ssh_private_key"
+ansible_ssh_common_args: >-
+  -o ProxyCommand="ssh -o IdentityFile={{ hostvars['bastion']['ansible_ssh_private_key_file'] }}
+  -o StrictHostKeyChecking=no
+  -o UserKnownHostsFile=/dev/null
+  -W %h:%p
+  -q ubuntu@{{ hostvars['bastion']['public_ip_address'] }}"
