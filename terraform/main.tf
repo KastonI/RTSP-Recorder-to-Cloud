@@ -22,7 +22,7 @@ resource "aws_vpc" "vpc" {
   }
 }
 
-# Подсети
+# Subnets
 resource "aws_subnet" "public" {
   cidr_block              = var.public_subnet_cidr
   vpc_id                  = aws_vpc.vpc.id
@@ -58,13 +58,6 @@ resource "aws_nat_gateway" "nat_gw" {
 
 resource "aws_security_group" "bastion_sg" {
   vpc_id = aws_vpc.vpc.id
-
-  ingress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
 
   ingress {
     from_port   = 22
@@ -104,7 +97,7 @@ resource "aws_security_group" "private_sg" {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["10.0.0.0/16"]
   }
 
   tags = { Name = "Private Security Group" }
