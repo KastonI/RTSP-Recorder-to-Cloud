@@ -66,14 +66,8 @@ jobs:
         run: |
           chmod 600 ansible.cfg
           ansible-playbook -i aws_ec2.yaml playbook.yaml --private-key /home/runner/.ssh/ssh_private_key -u ${ansible_user}
-
-      - name: Output Public and Private IPs (from Ansible Dynamic Inventory)
-        run: |
           echo "Fetching instance IPs using Ansible dynamic inventory..."
-
           echo "=== Public IPs ==="
           ansible-inventory -i aws_ec2.yaml --list | jq -r '.["_meta"].hostvars[] | select(.ec2_state == "running") | .public_ip_address'
-
           echo "=== Private IPs ==="
           ansible-inventory -i aws_ec2.yaml --list | jq -r '.["_meta"].hostvars[] | select(.ec2_state == "running") | .private_ip_address'
-
