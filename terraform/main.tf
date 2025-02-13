@@ -183,6 +183,7 @@ resource "aws_iam_role" "s3_uploader_role" {
       "Principal": {
         "Service": [
           "ec2.amazonaws.com",
+          "ecs-tasks.amazonaws.com"
         ]
       },
       "Action": "sts:AssumeRole"
