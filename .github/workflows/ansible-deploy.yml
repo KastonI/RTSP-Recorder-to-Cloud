@@ -62,7 +62,7 @@ jobs:
           TZ: ${{ vars.TZ }}
           NUM_CAMERAS: ${{ vars.NUM_CAMERAS }}
           MAX_BUFFER_SIZE: ${{ vars.MAX_BUFFER_SIZE }}
-          RECORD_DURATION: ${{ vars.DURATION }}
+          RECORD_DURATION: ${{ vars.RECORD_DURATION }}
         run: |
           chmod 600 ansible.cfg
           ansible-playbook -i aws_ec2.yaml playbook.yaml --private-key /home/runner/.ssh/ssh_private_key -u ${ansible_user}
