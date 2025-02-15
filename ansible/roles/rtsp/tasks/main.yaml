@@ -1,6 +1,6 @@
 ---
 
-- name: Iнсталювати Docker i Docker Compose
+- name: Install Docker and Docker-compose
   apt:
     name:
       - docker.io
@@ -8,30 +8,27 @@
     state: present
     update_cache: yes
 
-- name: Запустити i увiмкнути Docker
+- name: Ensure Docker service is started and enable 
   systemd:
     name: docker
     state: started
     enabled: yes
 
-- name: Створення репозиторiю для зберiгання файлiв i логiв
+- name: Create a directory for storing files and logs
   file:
-    path: "{{ item }}"
+    path: "/home/ubuntu/app"
     state: directory
     owner: ubuntu
     group: ubuntu
     mode: '0755'
-  loop:
-    - /home/ubuntu/app
-    - /var/log
 
-- name: Копiювання ключа SSH з пайплайну
+- name: Copy SSH key from pipeline
   copy:
     src: /home/runner/.ssh/ssh_private_key
     dest: /home/ubuntu/.ssh/ssh_private_key
     mode: '0600'
 
-- name: Копiювання GitHub репозиторiю з вихiдним кодом
+- name: Clone the GitHub repository with source code
   git:
     repo: "git@github.com:KastonI/final-project-src.git"
     dest: "/home/ubuntu/app"
@@ -41,7 +38,7 @@
     accept_hostkey: yes
     depth: 1
 
-- name: Деплой config.json з пiдстановкоб rtsp потокiв
+- name: Deploy temploy config.json with RTSP stream
   template:
     src: templates/config.json.j2
     dest: /home/ubuntu/app/config.json
@@ -52,27 +49,13 @@
     RTSP_URL_1: "{{ lookup('env', 'RTSP_URL_1') }}"
     RTSP_URL_2: "{{ lookup('env', 'RTSP_URL_2') }}"
 
-
-# - name: Запис змiнних у файл
-#   lineinfile:
-#     create: yes
-#     path: /etc/environment
-#     line: '{{ item.key }}="{{ lookup("env", item.value) }}"'
-#   loop:
-#     - { key: "TZ", value: "TZ" }
-#     - { key: "S3_BUCKET_NAME", value: "S3_BUCKET_NAME" }
-#     - { key: "NUM_CAMERAS", value: "NUM_CAMERAS" }
-#     - { key: "MAX_BUFFER_SIZE", value: "MAX_BUFFER_SIZE" }
-#     - { key: "RECORD_DURATION", value: "RECORD_DURATION" }
-#     - { key: "AWS_REGION", value: "AWS_REGION" }
-
-- name: Зупинити Docker Compose файл якщо створений
+- name: Stop Docker Compose if it is running
   shell: |
     docker-compose down --rmi all --volumes --remove-orphans
   args:
     chdir: /home/ubuntu/app
 
-- name: Деплой Docker Compose файлу
+- name: Deploy Docker Compose file
   shell: |
     docker-compose up --build -d
   args:
