@@ -10,4 +10,4 @@ host_key_checks: false
 hostnames:
   - tag:role
 compose:
-  ansible_host: public_ip_address if tag.role == "bastion" else private_ip_address
+  ansible_host: public_ip_address if tags.role == "bastion" else private_ip_address
