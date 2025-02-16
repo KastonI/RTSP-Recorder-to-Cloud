@@ -4,10 +4,10 @@ regions:
 filters:
   instance-state-name: running
 keyed_groups:
-  - key: tags.role
+  - key: ec2_tags.role
     prefix: role
 host_key_checks: false
 hostnames:
-  - tag:role
+  - tag:Name
 compose:
-  ansible_host: public_ip_address if tags.role == "bastion" else private_ip_address
+  ansible_host: "{{ public_ip_address if ec2_tags.role == 'bastion' else private_ip_address }}"
