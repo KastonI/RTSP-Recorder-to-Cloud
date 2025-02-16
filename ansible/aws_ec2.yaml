@@ -8,6 +8,6 @@ keyed_groups:
     prefix: role
 host_key_checks: false
 hostnames:
-  - tag:Name
+  - tag:role
 compose:
   ansible_host: "{{ public_ip_address if ec2_tags.role == 'bastion' else private_ip_address }}"
