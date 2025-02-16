@@ -1,6 +1,9 @@
+#---------------Provider---------------
 provider "aws" {
   region = var.aws_region
 }
+
+#---------------Backend---------------
 
 terraform {
   backend "s3" {
@@ -11,7 +14,7 @@ terraform {
   }
 }
 
-# VPC
+#---------------VPC---------------
 resource "aws_vpc" "vpc" {
   cidr_block           = var.vpc_cidr
   enable_dns_hostnames = true
@@ -22,7 +25,7 @@ resource "aws_vpc" "vpc" {
   }
 }
 
-# Subnets
+#---------------Subnets---------------
 resource "aws_subnet" "public" {
   cidr_block              = var.public_subnet_cidr
   vpc_id                  = aws_vpc.vpc.id
@@ -38,6 +41,8 @@ resource "aws_subnet" "private" {
   map_public_ip_on_launch = false
   tags                    = { Name = "Private subnet" }
 }
+
+#---------------GateWays---------------
 
 resource "aws_eip" "nat_eip" {
   domain = "vpc"
@@ -55,6 +60,8 @@ resource "aws_nat_gateway" "nat_gw" {
   depends_on    = [aws_internet_gateway.igw]
   tags          = { Name = "NAT Gateway" }
 }
+
+#---------------Security_Groups---------------
 
 resource "aws_security_group" "bastion_sg" {
   vpc_id = aws_vpc.vpc.id
@@ -130,6 +137,8 @@ resource "aws_security_group" "public_sg" {
   tags = { Name = "Public Security Group" }
 }
 
+#---------------Route_tables---------------
+
 resource "aws_route_table" "public_rt" {
   vpc_id = aws_vpc.vpc.id
 
@@ -160,10 +169,14 @@ resource "aws_route_table_association" "private_rt_assosiation" {
   subnet_id = aws_subnet.private.id
 }
 
+#---------------SSH-key---------------
+
 resource "aws_key_pair" "ssh_public_key" {
   key_name   = "ssh_public_key"
   public_key = var.ssh_public_key
 }
+
+#---------------IAM_role---------------
 
 resource "aws_iam_role" "s3_uploader_role" {
   name = "S3UploaderRole"
@@ -217,6 +230,8 @@ resource "aws_iam_instance_profile" "s3_instance_profile" {
   name = "S3UploaderInstanceProfile"
   role = aws_iam_role.s3_uploader_role.name
 }
+
+#---------------Instances---------------
 
 resource "aws_instance" "nginx_instance" {
   subnet_id              = aws_subnet.public.id
