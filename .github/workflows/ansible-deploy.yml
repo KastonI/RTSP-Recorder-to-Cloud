@@ -61,7 +61,7 @@ jobs:
           -e "RTSP_URL_2=${{ secrets.RTSP_URL_2 }}" \
           -e "S3_BUCKET_NAME=${{ vars.S3_RECORDS }}" \
           -e "TZ=${{ vars.TZ }}" \
-          -e "AWS_REGION=${{ vars.AWS_REGION }}"\
+          -e "AWS_REGION=${{ vars.AWS_REGION }}" \
           -e "NUM_CAMERAS=${{ vars.NUM_CAMERAS }}" \
           -e "MAX_BUFFER_SIZE=${{ vars.MAX_BUFFER_SIZE }}" \
           -e "RECORD_DURATION=${{ vars.RECORD_DURATION }}"
