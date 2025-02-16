@@ -49,6 +49,13 @@
     RTSP_URL_1: "{{ lookup('env', 'RTSP_URL_1') }}"
     RTSP_URL_2: "{{ lookup('env', 'RTSP_URL_2') }}"
 
+- name: Generate .env file for Docker
+  template:
+    src: env.j2
+    dest: "/home/ubuntu/app/.env"
+    owner: ubuntu
+    mode: '0644'
+
 - name: Stop Docker Compose if it is running
   shell: |
     docker-compose down --rmi all --volumes --remove-orphans

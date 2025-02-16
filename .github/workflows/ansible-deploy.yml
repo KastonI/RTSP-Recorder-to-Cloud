@@ -66,7 +66,6 @@ jobs:
         run: |
           chmod 600 ansible.cfg
           ansible-playbook -i aws_ec2.yaml playbook.yaml --private-key /home/runner/.ssh/ssh_private_key -u ${ansible_user} \
-          -e "ansible_user=${{ vars.ANSIBLE_USER }}" \
           -e "RTSP_URL_1=${{ secrets.RTSP_URL_1 }}" \
           -e "RTSP_URL_2=${{ secrets.RTSP_URL_2 }}" \
           -e "S3_BUCKET_NAME=${{ vars.S3_RECORDS }}" \
