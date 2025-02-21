@@ -1,13 +1,13 @@
 name: Terraform-deploy
 on:
-  push:
-    branches:
-      - master
-    paths:
-      - 'terraform/**'  # Запускаємо тiльки коли був пуш в terraform/
+  # push:
+  #   branches:
+  #     - master
+  #   paths:
+  #     - 'terraform/**'  # Запускаємо тiльки коли був пуш в terraform/
   workflow_dispatch:
-  repository_dispatch:  # Тригер для репозиторiю з вихiдним кодом
-    types: [push-to-src-repo]
+  # repository_dispatch:  # Тригер для репозиторiю з вихiдним кодом
+  #   types: [push-to-src-repo]
 
 jobs:
   terraform:

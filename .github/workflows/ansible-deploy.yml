@@ -1,17 +1,17 @@
 name: Ansible-Deploy
 on:
-  push:
-    branches:
-      - master
-    paths:
-      - 'ansible/**'  # Запускаємо тiльки коли змiнились файли в ansible/
+  # push:
+  #   branches:
+  #     - master
+  #   paths:
+  #     - 'ansible/**'  # Запускаємо тiльки коли змiнились файли в ansible/
   workflow_dispatch:
-  workflow_run:
-    workflows: ["Terraform-deploy"] 
-    types:
-      - completed
-    conclusions:
-      - success
+  # workflow_run:
+  #   workflows: ["Terraform-deploy"] 
+  #   types:
+  #     - completed
+  #   conclusions:
+  #     - success
 
 
 jobs:
