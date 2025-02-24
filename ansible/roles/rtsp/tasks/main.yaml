@@ -18,8 +18,8 @@
   file:
     path: "/home/{{ ANSIBLE_USER }}/app"
     state: directory
-    owner: {{ ANSIBLE_USER }}
-    group: {{ ANSIBLE_USER }}
+    owner: "{{ ANSIBLE_USER }}"
+    group: "{{ ANSIBLE_USER }}"
     mode: '0755'
 
 - name: Copy SSH key from pipeline
@@ -42,8 +42,8 @@
   template:
     src: templates/config.json.j2
     dest: /home/{{ ANSIBLE_USER }}/app/config.json
-    owner: {{ ANSIBLE_USER }}
-    group: {{ ANSIBLE_USER }}
+    owner: "{{ ANSIBLE_USER }}"
+    group: "{{ ANSIBLE_USER }}"
     mode: '0644'
   vars:
     RTSP_URL_1: "{{ lookup('env', 'RTSP_URL_1') }}"
@@ -53,7 +53,7 @@
   template:
     src: env.j2
     dest: "/home/{{ ANSIBLE_USER }}/app/.env"
-    owner: {{ ANSIBLE_USER }}
+    owner: "{{ ANSIBLE_USER }}"
     mode: '0644'
 
 - name: Stop Docker Compose if it is running
