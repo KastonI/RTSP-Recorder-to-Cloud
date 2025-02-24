@@ -16,24 +16,24 @@
 
 - name: Create a directory for storing files and logs
   file:
-    path: "/home/ubuntu/app"
+    path: "/home/{{ ANSIBLE_USER }}/app"
     state: directory
-    owner: ubuntu
-    group: ubuntu
+    owner: {{ ANSIBLE_USER }}
+    group: {{ ANSIBLE_USER }}
     mode: '0755'
 
 - name: Copy SSH key from pipeline
   copy:
     src: /home/runner/.ssh/ssh_private_key
-    dest: /home/ubuntu/.ssh/ssh_private_key
+    dest: /home/{{ ANSIBLE_USER }}/.ssh/ssh_private_key
     mode: '0600'
 
 - name: Clone the GitHub repository with source code
   git:
     repo: "git@github.com:KastonI/final-project-src.git"
-    dest: "/home/ubuntu/app"
+    dest: "/home/{{ ANSIBLE_USER }}/app"
     version: master
-    key_file: "/home/ubuntu/.ssh/ssh_private_key"
+    key_file: "/home/{{ ANSIBLE_USER }}/.ssh/ssh_private_key"
     force: yes
     accept_hostkey: yes
     depth: 1
@@ -41,9 +41,9 @@
 - name: Deploy temploy config.json with RTSP stream
   template:
     src: templates/config.json.j2
-    dest: /home/ubuntu/app/config.json
-    owner: ubuntu
-    group: ubuntu
+    dest: /home/{{ ANSIBLE_USER }}/app/config.json
+    owner: {{ ANSIBLE_USER }}
+    group: {{ ANSIBLE_USER }}
     mode: '0644'
   vars:
     RTSP_URL_1: "{{ lookup('env', 'RTSP_URL_1') }}"
@@ -52,18 +52,18 @@
 - name: Generate .env file for Docker
   template:
     src: env.j2
-    dest: "/home/ubuntu/app/.env"
-    owner: ubuntu
+    dest: "/home/{{ ANSIBLE_USER }}/app/.env"
+    owner: {{ ANSIBLE_USER }}
     mode: '0644'
 
 - name: Stop Docker Compose if it is running
   shell: |
     docker-compose down --rmi all --volumes --remove-orphans
   args:
-    chdir: /home/ubuntu/app
+    chdir: /home/{{ ANSIBLE_USER }}/app
 
 - name: Deploy Docker Compose file
   shell: |
     docker-compose up --build -d
   args:
-    chdir: /home/ubuntu/app
+    chdir: /home/{{ ANSIBLE_USER }}/app
