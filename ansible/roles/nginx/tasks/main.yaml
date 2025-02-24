@@ -1,20 +1,20 @@
-- name: Iнсталювати nginx
+- name: Install nginx
   apt:
     name:
       - nginx
     state: present
     update_cache: yes
 
-- name: Знайти приватний Ip для iнстансу з role_rtsp
+- name: Find private Ip for instance role_rtsp
   set_fact:
     rtsp_private_ip: "{{ hostvars[groups['role_rtsp'][0]]['private_ip_address'] }}"
   when: groups['role_rtsp'] | length > 0 and 'private_ip_address' in hostvars[groups['role_rtsp'][0]]
 
-- name: Вивести приватний ip для rtsp iнстансу
+- name: Print private ip for rtsp instance
   debug:
     msg: "Private ip for rtsp: {{ private_ip_address }}"
 
-- name: Копiюю nginx.conf з ip адресою
+- name: Cpoy nginx.conf with private ip
   template:
     src: templates/nginx.conf.j2
     dest: /etc/nginx/nginx.conf
