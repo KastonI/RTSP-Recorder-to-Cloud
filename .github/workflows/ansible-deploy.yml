@@ -65,4 +65,4 @@ jobs:
           -e "NUM_CAMERAS=${{ vars.NUM_CAMERAS }}" \
           -e "MAX_BUFFER_SIZE=${{ vars.MAX_BUFFER_SIZE }}" \
           -e "RECORD_DURATION=${{ vars.RECORD_DURATION }}" \
-          -e "RECORD_DURATION=${{ vars.ANSIBLE_USER }}"
+          -e "ANSIBLE_USER=${{ vars.ANSIBLE_USER }}"
