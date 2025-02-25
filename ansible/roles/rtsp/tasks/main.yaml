@@ -64,6 +64,6 @@
 
 - name: Deploy Docker Compose file
   shell: |
-    docker-compose up --build -d
+    docker-compose up --build -d --no-cache
   args:
     chdir: /home/{{ ANSIBLE_USER }}/app
