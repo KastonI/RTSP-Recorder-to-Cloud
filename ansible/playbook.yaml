@@ -1,10 +1,9 @@
 ---
 
-# - hosts: role_bastion
-#   gather_facts: yes
-#   remote_user: ubuntu
-#   roles:
-#     - role: bastion
+- hosts: role_bastion
+  gather_facts: yes
+  roles:
+    - role: bastion
 
 - hosts: role_nginx
   gather_facts: yes

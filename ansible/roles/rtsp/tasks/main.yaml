@@ -56,14 +56,16 @@
     owner: "{{ ANSIBLE_USER }}"
     mode: '0644'
 
-- name: Stop Docker Compose if it is running
-  shell: |
-    docker-compose down --rmi all --volumes --remove-orphans
-  args:
-    chdir: /home/{{ ANSIBLE_USER }}/app
+- name: Stop running Docker Compose services
+  community.docker.docker_compose:
+    project_src: "/home/{{ ANSIBLE_USER }}/app"
+    state: absent
+    remove_volumes: true
+    remove_orphans: true
 
-- name: Deploy Docker Compose file
-  shell: |
-    docker-compose up --build -d --no-cache
-  args:
-    chdir: /home/{{ ANSIBLE_USER }}/app
+- name: Deploy application with Docker Compose
+  community.docker.docker_compose:
+    project_src: "/home/{{ ANSIBLE_USER }}/app"
+    build: true
+    recreate: smart
+    state: present

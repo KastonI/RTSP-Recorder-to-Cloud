@@ -1,3 +1,36 @@
+- name: Update apt cache
+  apt:
+    update_cache: yes
+
+- name: Install Fail2Ban
+  apt:
+    name: fail2ban
+    state: present
+
+- name: Ensure Fail2Ban service is running
+  systemd:
+    name: fail2ban
+    state: started
+    enabled: yes
+
+- name: Configure Fail2Ban (jail.local)
+  copy:
+    src: files/jail.local
+    dest: /etc/fail2ban/jail.local
+    owner: root
+    group: root
+    mode: '0644'
+
+  notify:
+    - Restart Fail2ban
+
+
+
+
+
+
+
+
 sudo apt update && sudo apt-get install -y fail2ban
 sudo systemctl status fail2ban
 
