@@ -57,14 +57,14 @@
     mode: '0644'
 
 - name: Stop running Docker Compose services
-  community.docker.docker_compose:
+  community.docker.docker_compose_v2:
     project_src: "/home/{{ ANSIBLE_USER }}/app"
     state: absent
     remove_volumes: true
     remove_orphans: true
 
 - name: Deploy application with Docker Compose
-  community.docker.docker_compose:
+  community.docker.docker_compose_v2:
     project_src: "/home/{{ ANSIBLE_USER }}/app"
     build: true
     recreate: smart
