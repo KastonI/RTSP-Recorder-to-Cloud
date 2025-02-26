@@ -6,7 +6,7 @@ banaction = iptables-multiport
 
 [sshd]
 enabled = true
-port = ssh
+port = 22
 logpath = /var/log/auth.log
 maxretry = 3
 findtime = 600
