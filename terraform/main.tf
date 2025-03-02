@@ -3,17 +3,6 @@ provider "aws" {
   region = var.aws_region
 }
 
-#---------------Backend---------------
-
-terraform {
-  backend "s3" {
-    bucket  = "final-project-tfstate"
-    key     = "terraform/terraform.tfstate"
-    region  = "eu-central-1"
-    encrypt = true
-  }
-}
-
 #---------------VPC---------------
 resource "aws_vpc" "vpc" {
   cidr_block           = var.vpc_cidr
@@ -21,7 +10,6 @@ resource "aws_vpc" "vpc" {
   enable_dns_support   = true
   tags = {
     Name   = "Final Project"
-    create = "terraform"
   }
 }
 
