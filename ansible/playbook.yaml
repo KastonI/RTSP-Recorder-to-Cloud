@@ -4,9 +4,15 @@
   gather_facts: false
   tasks:
     - name: Fail if no hosts are available
-      fail:
-        msg: "❌ Error: No hosts available for deployment!"
-      when: ansible_play_hosts | length == 0
+      run_once: true
+      delegate_to: localhost
+      shell: |
+        INVENTORY_COUNT=$(ansible-inventory --list | jq '.["_meta"]["hostvars"] | length')
+        if [[ "$INVENTORY_COUNT" -eq 0 ]]; then
+          echo "❌ No hosts available in inventory. Stopping pipeline."
+          exit 1
+        fi
+
 
 
 - hosts: role_bastion
