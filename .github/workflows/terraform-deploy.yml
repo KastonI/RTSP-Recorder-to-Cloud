@@ -24,7 +24,6 @@ jobs:
       TF_VAR_instance_type: ${{ vars.INSTANCE_TYPE }}
       TF_VAR_instance_type_rtsp: ${{ vars.INSTANCE_TYPE_RTSP }}
       TF_VAR_ssh_public_key: ${{ vars.SSH_PUBLIC_KEY }}
-      TF_VAR_ssh_public_bastion: ${{ vars.SSH_PUBLIC_BASTION }}
     
     steps:
       - name: Checkout repository
