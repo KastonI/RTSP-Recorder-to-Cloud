@@ -47,7 +47,6 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > /home/runner/.ssh/ssh_private_key
-          echo "${{ secrets.SSH_PRIVATE_BASTION }}" > /home/runner/.ssh/ssh_private_bastion
           chmod 600 /home/runner/.ssh/*
           ssh-keyscan -H github.com >> ~/.ssh/known_hosts
 
