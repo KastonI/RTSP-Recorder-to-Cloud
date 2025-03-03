@@ -6,8 +6,6 @@ on:
   #   paths:
   #     - 'terraform/**'  # Run only when there was a push in terraform/
   workflow_dispatch:
-  repository_dispatch:  # Trigger from src repository 
-    types: [push-to-src-repo]
 
 jobs:
   terraform:

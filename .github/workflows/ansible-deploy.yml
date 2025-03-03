@@ -10,7 +10,8 @@ on:
     workflows: ["Terraform-deploy"] 
     types:
       - completed
-
+  repository_dispatch:  # Trigger from src repository 
+    types: [push-to-src-repo]
 
 
 jobs:
