@@ -4,17 +4,17 @@ variable "aws_region" {
 }
 
 variable "vpc_cidr" {
-  default     = "" #"10.0.0.0/16"
+  default     = "10.0.0.0/16"
   description = "CIDR block for VPC"
 }
 
 variable "public_subnet_cidr" {
-  default     = "" #"10.0.1.0/24"
+  default     = "10.0.1.0/24"
   description = "Public CIDR for VPC"
 }
 
 variable "private_subnet_cidr" {
-  default     = "" #"10.0.2.0/24"
+  default     = "10.0.2.0/24"
   description = "Private CIDR for VPC"
 }
 
@@ -29,12 +29,12 @@ variable "aws_instance" {
 }
 
 variable "instance_type" {
-  default     = ""  #"t2.micro"
+  default     = "" #"t2.micro"
   description = "Instance type for common EC2"
 }
 
 variable "instance_type_rtsp" {
-  default     = ""  #"t2.medium"
+  default     = "" #"t2.medium"
   description = "Instance type for RTSP EC2"
 }
 

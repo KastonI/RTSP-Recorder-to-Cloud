@@ -9,7 +9,7 @@ resource "aws_vpc" "vpc" {
   enable_dns_hostnames = true
   enable_dns_support   = true
   tags = {
-    Name   = "Final Project"
+    Name = "Final Project"
   }
 }
 
@@ -65,7 +65,7 @@ resource "aws_security_group" "bastion_sg" {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"] 
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   tags = { Name = "Bastion Security Group" }
@@ -75,11 +75,11 @@ resource "aws_security_group" "private_sg" {
   vpc_id = aws_vpc.vpc.id
 
   ingress {
-  from_port       = 0
-  to_port         = 0
-  protocol        = "-1"
-  cidr_blocks = ["0.0.0.0/0"]
-  } 
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
   ingress {
     from_port       = 22
@@ -139,7 +139,7 @@ resource "aws_route_table" "public_rt" {
 
 resource "aws_route_table_association" "public_rt_assosiation" {
   route_table_id = aws_route_table.public_rt.id
-  subnet_id = aws_subnet.public.id
+  subnet_id      = aws_subnet.public.id
 }
 
 resource "aws_route_table" "private_rt" {
@@ -154,7 +154,7 @@ resource "aws_route_table" "private_rt" {
 
 resource "aws_route_table_association" "private_rt_assosiation" {
   route_table_id = aws_route_table.private_rt.id
-  subnet_id = aws_subnet.private.id
+  subnet_id      = aws_subnet.private.id
 }
 
 #---------------SSH-key---------------
@@ -167,7 +167,7 @@ resource "aws_key_pair" "ssh_public_key" {
 #---------------IAM_role---------------
 
 resource "aws_iam_role" "s3_uploader_role" {
-  name = "S3UploaderRole"
+  name               = "S3UploaderRole"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -226,7 +226,7 @@ resource "aws_instance" "nginx_instance" {
   ami                    = var.aws_instance
   instance_type          = var.instance_type
   key_name               = aws_key_pair.ssh_public_key.key_name
-  vpc_security_group_ids = [aws_security_group.public_sg.id] 
+  vpc_security_group_ids = [aws_security_group.public_sg.id]
 
   associate_public_ip_address = true
   tags = {
@@ -241,7 +241,7 @@ resource "aws_instance" "bastion_host_instance" {
   ami                    = var.aws_instance
   instance_type          = var.instance_type
   key_name               = aws_key_pair.ssh_public_key.key_name
-  vpc_security_group_ids = [aws_security_group.bastion_sg.id] 
+  vpc_security_group_ids = [aws_security_group.bastion_sg.id]
 
   associate_public_ip_address = true
   tags = {
