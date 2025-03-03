@@ -32,8 +32,9 @@ jobs:
           fetch-depth: 1
 
       - name: Check if hosts exist in dynamic inventory
+        working-directory: ./ansible
         run: |
-          INVENTORY_OUTPUT=$(ansible-inventory -i ansible/aws_ec2.yaml --list)
+          INVENTORY_OUTPUT=$(ansible-inventory -i aws_ec2.yaml --list)
           echo "Inventory output: $INVENTORY_OUTPUT"
           if [[ $(echo "$INVENTORY_OUTPUT" | jq '.["_meta"]["hostvars"] | length') -eq 0 ]]; then
             echo "❌ No hosts available in inventory. Stopping pipeline."
