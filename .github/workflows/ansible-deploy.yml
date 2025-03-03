@@ -31,6 +31,15 @@ jobs:
         with:
           fetch-depth: 1
 
+      - name: Check if hosts exist in dynamic inventory
+        run: |
+          INVENTORY_OUTPUT=$(ansible-inventory --list)
+          echo "Inventory output: $INVENTORY_OUTPUT"
+          if [[ $(echo "$INVENTORY_OUTPUT" | jq '.["_meta"]["hostvars"] | length') -eq 0 ]]; then
+            echo "❌ No hosts available in inventory. Stopping pipeline."
+            exit 1
+          fi
+      
       - name: Install Python dependencies
         run: |
           sudo apt update && sudo apt install -y python3-pip python3-venv

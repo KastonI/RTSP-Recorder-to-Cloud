@@ -1,20 +1,4 @@
 ---
-- name: Check if hosts exist before running playbook
-  hosts: all
-  gather_facts: false
-  tasks:
-    - name: Fail if no hosts are available
-      run_once: true
-      delegate_to: localhost
-      shell: |
-        INVENTORY_COUNT=$(ansible-inventory --list | jq '.["_meta"]["hostvars"] | length')
-        if [[ "$INVENTORY_COUNT" -eq 0 ]]; then
-          echo "❌ No hosts available in inventory. Stopping pipeline."
-          exit 1
-        fi
-
-
-
 - hosts: role_bastion
   gather_facts: yes
   become: yes
