@@ -1,10 +1,10 @@
 name: Terraform-deploy
 on:
-  push:
-    branches:
-      - master
-    paths:
-      - 'terraform/**'  # Run only when there was a push in terraform/
+  # push:
+  #   branches:
+  #     - master
+  #   paths:
+  #     - 'terraform/**'  # Run only when there was a push in terraform/
   workflow_dispatch:
   repository_dispatch:  # Trigger from src repository 
     types: [push-to-src-repo]
