@@ -1,4 +1,13 @@
 ---
+- name: Check if hosts exist before running playbook
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Fail if no hosts are available
+      fail:
+        msg: "❌ Error: No hosts available for deployment!"
+      when: ansible_play_hosts | length == 0
+
 
 - hosts: role_bastion
   gather_facts: yes
