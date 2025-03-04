@@ -70,7 +70,7 @@
 
 - name: Find public IPs with hostnames
   set_fact:
-    public_ips_map: "{{ dict(groups.all | zip(groups.all | map('extract', hostvars, 'ec2_public_ip') | list)) }}"
+    public_ips_map: "{{ dict(groups.all | zip(groups.all | map('extract', hostvars, 'public_ip') | list)) }}"
 
 - name: Print public IPs per host
   debug:
