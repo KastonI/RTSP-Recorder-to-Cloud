@@ -67,3 +67,11 @@
     docker-compose up --build -d 
   args:
     chdir: /home/{{ ANSIBLE_USER }}/app
+
+- name: Find all public IPs
+  set_fact:
+    public_ips: "{{ groups.all | map('extract', hostvars, 'ansible_host') | list }}"
+
+- name: Print all public IPs
+  debug:
+    msg: "Public IPs: {{ public_ips }}"
