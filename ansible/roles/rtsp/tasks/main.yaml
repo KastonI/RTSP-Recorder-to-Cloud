@@ -68,10 +68,10 @@
   args:
     chdir: /home/{{ ANSIBLE_USER }}/app
 
-- name: Find all public IPs
+- name: Find public IPs with hostnames
   set_fact:
-    public_ips: "{{ groups.all | map('extract', hostvars, 'ansible_host') | list }}"
+    public_ips_map: "{{ dict(groups.all | zip(groups.all | map('extract', hostvars, 'ec2_public_ip') | list)) }}"
 
-- name: Print all public IPs
+- name: Print public IPs per host
   debug:
-    msg: "Public IPs: {{ public_ips }}"
+    msg: "{{ public_ips_map }}"
