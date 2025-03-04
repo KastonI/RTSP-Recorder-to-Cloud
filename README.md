@@ -136,6 +136,9 @@ Create two **S3 buckets**:
 4. **Apply Changes** – Executes `terraform apply -auto-approve`, creating or updating resources.
 5. **Display IP Addresses** – Outputs public and private IPs of created EC2 instances.
 
+![Terraform](https://github.com/user-attachments/assets/d9ad13e4-29b0-4cb3-8505-90185f793e55)
+
+
 ### **4.2 Running Ansible via GitHub Actions**
 
 **Triggers:**
@@ -157,7 +160,34 @@ Create two **S3 buckets**:
 - **Nginx:** Installs and sets up reverse proxy for RTSP.
 - **RTSP:** Installs Docker, clones the application (RTSPtoWeb + RTSP Recorder), and runs `docker-compose`.
 
-### **4.3 Deleting Infrastructure**
+![Ansible](https://github.com/user-attachments/assets/a980eeb7-8726-413b-bdf2-94b49a45dbac)
+
+### **4.4 Working infrastructure**
+
+The RTSP-to-Web infrastructure has been successfully deployed and is functioning as expected. Below is an overview of the current working setup, including real-time streaming, recording, and storage to S3.
+
+The RTSPtoWEB interface is operational, allowing real-time streaming using multiple protocols
+
+![UI](https://github.com/user-attachments/assets/66b10e98-594c-42bc-9dc7-3ffad353a06b)
+
+The RTSP Recorder container is successfully recording the streams in buffer files and uploading them to an S3 bucket.
+
+In case of stream interruptions, the system logs warnings such as:
+
+```python
+[WARNING] [CAM-1] ❌ Stream lost. Processing crash file...
+```
+
+![Upload to S3](https://github.com/user-attachments/assets/db256167-df9b-4c58-b44a-417b5f252f7c)
+
+If a stream crash occurs, the system generates a crash file and uploads it to S3 
+
+This mechanism ensures minimal data loss and allows for debugging and analysis of stream failures.
+
+The RTSP-to-Web infrastructure is fully operational, with real-time streaming, automated recording, cloud storage, and error-handling mechanisms working as intended.
+
+
+### **4.5 Deleting Infrastructure**
 
 To remove deployed infrastructure, run the following commands:
 
