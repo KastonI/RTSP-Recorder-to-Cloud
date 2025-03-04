@@ -10,8 +10,6 @@ on:
     workflows: ["Terraform-deploy"] 
     types:
       - completed
-    conclusions: 
-      - success
   repository_dispatch:  # Trigger from src repository 
     types: [push-to-src-repo]
 
@@ -19,6 +17,7 @@ on:
 jobs:
   ansible:
     name: Ansible Deploy
+    if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest    
 
     env:
