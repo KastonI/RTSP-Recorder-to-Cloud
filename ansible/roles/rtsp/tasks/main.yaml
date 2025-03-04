@@ -71,7 +71,7 @@
 - name: Find public IPs with hostnames
   set_fact:
     public_ips_map: >-
-      {{ dict(groups.all | zip(groups.all | map('extract', hostvars, 'public_ip_address') | select('defined') | list)) }}
+      {{ dict(groups.all | zip(groups.all | map('extract', hostvars, 'public_ip_address') | list)) }}
 
 - name: Print public IPs per host
   debug:
