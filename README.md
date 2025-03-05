@@ -72,14 +72,25 @@ This document describes how to deploy AWS infrastructure and configure servers u
 
 ## **3. Environment Setup**
 
-### **3.1 Creating S3 Buckets in AWS**
+### **3.1 Fork the repository**
+
+To start using this project, you need to create your own copy of the repository.
+
+Steps to Fork the Repository:
+- Click the **"Fork"** button in the top-right corner of the page.
+- Wait for GitHub to create a copy of the repository under your account.
+
+### **3.2 Creating S3 Buckets in AWS**
 
 Create two **S3 buckets**:
 
 - **Terraform state bucket** (`S3_TFSTATE_BUCKET`): Stores `.tfstate` file to track infrastructure changes.
 - **RTSP recordings and logs bucket** (`S3_BUCKET_NAME`): Used for storing RTSP video recordings.
 
-### **3.2 Setting Up GitHub Secrets and Variables**
+### **3.3 Setting Up GitHub Secrets and Variables**
+
+Go to your forked repository on GitHub.
+Navigate to **Settings** > **Secrets and variables** > **Actions**.
 
 #### **Secrets (Sensitive Data):**
 
