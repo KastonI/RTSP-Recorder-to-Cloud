@@ -49,6 +49,12 @@
     RTSP_URL_1: "{{ lookup('env', 'RTSP_URL_1') }}"
     RTSP_URL_2: "{{ lookup('env', 'RTSP_URL_2') }}"
 
+- name: Check JSON file
+  command: jq empty /path/to/file.json
+  register: json_check
+  ignore_errors: false
+
+
 - name: Generate .env file for Docker
   template:
     src: env.j2

@@ -1,6 +1,6 @@
 plugin: amazon.aws.aws_ec2
 regions:
-  - "{{ lookup('env', 'AWS_REGION') }}"
+  - "{{ lookup('env', 'AWS_REGION') | default('eu-central-1', true) }}"
 filters:
   instance-state-name: running
 keyed_groups:
